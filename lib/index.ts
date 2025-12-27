@@ -1,16 +1,16 @@
 import { Plugin } from "vite";
 
 import { Config } from "./config.ts";
-import middleware from "./middleware.ts";
+import applyMiddleware from "./middleware.ts";
 
 export default function serveStatic(config: Config): Plugin {
   return {
     name: "serve-static",
     configureServer(server) {
-      return () => server.middlewares.use(middleware(config));
+      applyMiddleware(server, config);
     },
     configurePreviewServer(server) {
-      return () => server.middlewares.use(middleware(config));
+      applyMiddleware(server, config);
     },
   };
 }

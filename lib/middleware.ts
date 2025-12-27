@@ -1,12 +1,19 @@
+import * as mime from "mime-types";
+import corsMiddleware from "cors";
 import fs from "fs";
-import { contentType } from "mime-types";
 import path from "path";
-import { Connect } from "vite";
+import { Connect, Logger, PreviewServer, ViteDevServer } from "vite";
 
-import { Config } from "./config.ts";
+import { Config as PluginConfig } from "./config.ts";
+import { isDevServer, setupLogger } from "./utils.ts";
 
-const middleware = (config: Config): Connect.NextHandleFunction => {
-  return (req, res, next) => {
+export function createMiddleware(
+  config: PluginConfig,
+  rawLogger: Logger,
+): Connect.NextHandleFunction {
+  const log = setupLogger(rawLogger);
+
+  return function serveStaticMiddleware(req, res, next) {
     if (!req.url) {
       return next();
     }
@@ -21,14 +28,14 @@ const middleware = (config: Config): Connect.NextHandleFunction => {
         if (!stats || !stats.isFile()) {
           res.writeHead(404);
           res.end("Not found");
-          console.error(`File ${filePath} is not a file`);
+          log.error(`File ${filePath} is not a file`);
           return;
         }
 
-        const type = contentType(path.basename(filePath));
+        const type = mime.contentType(path.basename(filePath));
         res.writeHead(200, {
           "Content-Length": stats.size,
-          "Content-Type": type || undefined,
+          "Content-Type": type || "application/octet-stream",
         });
 
         const stream = fs.createReadStream(filePath);
@@ -39,6 +46,20 @@ const middleware = (config: Config): Connect.NextHandleFunction => {
 
     return next();
   };
-};
+}
 
-export default middleware;
+export default function applyMiddleware(
+  server: ViteDevServer | PreviewServer,
+  pluginConfig: PluginConfig,
+) {
+  const pluginMiddleware = createMiddleware(pluginConfig, server.config.logger);
+  const corsConfig = isDevServer(server) ? server.config.server.cors : server.config.preview.cors;
+
+  // https://github.com/vitejs/vite/blob/fcf50c2e881356ea0d725cc563722712a2bf5695/packages/vite/src/node/server/index.ts#L852-L854
+  if (corsConfig !== false) {
+    const config = typeof corsConfig === "boolean" ? {} : corsConfig;
+    server.middlewares.use(corsMiddleware(config));
+  }
+
+  server.middlewares.use(pluginMiddleware);
+}
