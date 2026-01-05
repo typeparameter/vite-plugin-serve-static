@@ -9,6 +9,7 @@ A simple Vite plugin for serving arbitrary static files that aren't in your `pub
 ```typescript
 // vite.config.ts
 import path from "path";
+
 import { defineConfig } from "vite";
 import serveStatic from "vite-plugin-serve-static";
 

@@ -1,7 +1,8 @@
-import * as mime from "mime-types";
-import corsMiddleware from "cors";
 import fs from "fs";
 import path from "path";
+
+import corsMiddleware from "cors";
+import * as mime from "mime-types";
 import { Connect, Logger, PreviewServer, ViteDevServer } from "vite";
 
 import { Config as PluginConfig } from "./config.ts";

@@ -21,8 +21,8 @@
   "scripts": {
     "build": "tsc && tsup",
     "clean": "rimraf dist",
-    "format": "prettier --write .",
-    "format:check": "prettier --check .",
+    "format": "prettier --cache --write .",
+    "format:check": "prettier --cache --check .",
     "lint": "eslint --cache --max-warnings=0 .",
     "lint:fix": "eslint --fix --cache --max-warnings=0 .",
     "prepack": "npm-run-all build test lint format:check",
@@ -36,7 +36,7 @@
     "mime-types": "^2.1.35"
   },
   "devDependencies": {
-    "@trivago/prettier-plugin-sort-imports": "^5.2.0",
+    "@ianvs/prettier-plugin-sort-imports": "^4.7.0",
     "@types/cors": "^2.8.17",
     "@types/mime-types": "^2.1.4",
     "@typescript-eslint/eslint-plugin": "^8.18.0",
