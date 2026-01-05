@@ -17,6 +17,18 @@
   ],
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "devEngines": {
+    "runtime": {
+      "name": "node",
+      "version": "^24.0.0",
+      "onFail": "warn"
+    },
+    "packageManager": {
+      "name": "pnpm",
+      "version": "^10.27.0",
+      "onFail": "warn"
+    }
+  },
   "scripts": {
     "build": "tsc && tsup",
     "clean": "rimraf dist",
