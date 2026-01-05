@@ -2,7 +2,7 @@ import { defineConfig } from "tsup";
 
 export default defineConfig({
   entry: ["lib/index.ts"],
-  target: "es2020",
+  target: "node20",
   format: ["esm"],
   dts: true,
 });

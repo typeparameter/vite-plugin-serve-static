@@ -12,6 +12,9 @@
     "vite-plugin"
   ],
   "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
   "files": [
     "dist"
   ],
