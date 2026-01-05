@@ -33,8 +33,8 @@ jobs:
     name: Test
     strategy:
       matrix:
-        node-version: [ 18, 20, 22, 24 ]
-        os: [ ubuntu-latest, windows-latest, macos-latest ]
+        node-version: [18, 20, 22, 24]
+        os: [ubuntu-latest, windows-latest, macos-latest]
       fail-fast: false
     runs-on: ${{ matrix.os }}
     steps:
