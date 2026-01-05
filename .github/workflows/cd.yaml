@@ -15,18 +15,14 @@ jobs:
     name: Release
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: 24
-          cache: npm
-      - name: Install dependencies
-        run: npm ci
-      - name: Verify dependency signatures
-        run: npm audit signatures
-      - name: Publish release
-        run: npx semantic-release@25
+          cache: pnpm
+      - run: pnpm install
+      - run: npm audit signatures
+      - run: pnpx semantic-release@25
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}

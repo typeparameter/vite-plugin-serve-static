@@ -1,8 +1,7 @@
-import { defineConfig } from "tsup";
+import { defineConfig } from "tsdown";
 
 export default defineConfig({
   entry: ["lib/index.ts"],
-  target: "es2020",
   format: ["esm"],
   dts: true,
 });
