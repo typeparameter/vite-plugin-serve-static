@@ -4,10 +4,10 @@
   "description": "A Vite plugin for serving static files during local development",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/reifiedbeans/vite-plugin-serve-static.git"
+    "url": "git+https://github.com/typeparameter/vite-plugin-serve-static.git"
   },
   "license": "MIT",
-  "homepage": "https://github.com/reifiedbeans/vite-plugin-serve-static",
+  "homepage": "https://github.com/typeparameter/vite-plugin-serve-static",
   "keywords": [
     "vite-plugin"
   ],
