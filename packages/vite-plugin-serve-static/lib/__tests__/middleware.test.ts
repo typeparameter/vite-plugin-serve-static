@@ -146,6 +146,33 @@ describe("middleware", () => {
     expect(mockNext).not.toHaveBeenCalled();
   });
 
+  it("drops undefined header values", () => {
+    // given
+    const config: Config = [
+      {
+        pattern: /^\/hello/,
+        resolve: path.join(".", "hello"),
+        headers: {
+          "Cache-Control": undefined,
+          "X-Static-File": "true",
+        },
+      },
+    ];
+    const middleware = createMiddleware(config, mockLogger);
+    const req = createMockReq({ url: "/hello" });
+    const res = createMockRes();
+
+    // when
+    middleware(req, res, mockNext);
+
+    // then
+    const [status, headers] = vi.mocked(res.writeHead).mock.calls[0]!;
+    expect(status).toBe(200);
+    expect(headers).toMatchObject({ "x-static-file": "true" });
+    expect(headers).not.toHaveProperty("cache-control");
+    expect(mockNext).not.toHaveBeenCalled();
+  });
+
   it("uses the content type from headers when provided", () => {
     // given
     const config: Config = {

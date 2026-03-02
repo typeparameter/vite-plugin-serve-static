@@ -29,6 +29,8 @@ export function normalizeConfig(config: Config) {
 function normalizeHeaders(headers?: http.OutgoingHttpHeaders): http.OutgoingHttpHeaders {
   if (!headers) return {};
 
-  const entries = Object.entries(headers).map(([key, value]) => [key.toLowerCase(), value]);
+  const entries = Object.entries(headers)
+    .filter(([, value]) => value !== undefined)
+    .map(([key, value]) => [key.toLowerCase(), value]);
   return Object.fromEntries(entries);
 }
