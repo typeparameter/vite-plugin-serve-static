@@ -1,64 +1,32 @@
 {
-  "name": "vite-plugin-serve-static",
-  "version": "0.0.0",
-  "description": "A Vite plugin for serving static files during local development",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/typeparameter/vite-plugin-serve-static.git"
-  },
-  "license": "MIT",
-  "homepage": "https://github.com/typeparameter/vite-plugin-serve-static",
-  "keywords": [
-    "vite-plugin"
-  ],
-  "type": "module",
+  "name": "vite-plugin-serve-static-workspace",
+  "private": true,
+  "packageManager": "pnpm@10.0.0",
   "engines": {
     "node": ">=20"
   },
-  "files": [
-    "dist"
-  ],
-  "main": "dist/index.mjs",
-  "types": "dist/index.d.mts",
-  "packageManager": "pnpm@10.0.0",
   "scripts": {
-    "build": "tsdown",
-    "clean": "rimraf dist",
+    "build": "turbo build",
+    "clean": "turbo clean",
+    "dev": "turbo dev",
     "format": "prettier --cache --write .",
     "format:check": "prettier --cache --check .",
-    "lint": "tsc && eslint --cache --max-warnings=0 .",
-    "lint:fix": "tsc && eslint --fix --cache --max-warnings=0 .",
-    "prepack": "pnpm build",
-    "test": "vitest --run"
-  },
-  "peerDependencies": {
-    "vite": ">=5.0.0 <8.0.0"
-  },
-  "dependencies": {
-    "cors": "^2.8.5",
-    "mime-types": "^2.1.35"
+    "lint": "turbo lint",
+    "lint:fix": "turbo lint:fix",
+    "test": "turbo test"
   },
   "devDependencies": {
-    "@eslint/compat": "^2.0.0",
-    "@eslint/js": "^9.39.2",
     "@ianvs/prettier-plugin-sort-imports": "^4.7.0",
-    "@types/cors": "^2.8.17",
-    "@types/mime-types": "^2.1.4",
+    "@eslint/js": "^9.39.2",
     "conventional-changelog-conventionalcommits": "^8.0.0",
     "eslint": "^9.39.2",
     "eslint-config-prettier": "^10.1.8",
     "prettier": "^3.4.2",
-    "rimraf": "^6.0.1",
-    "tsdown": "^0.18.4",
-    "typescript": "~5.7.2",
-    "typescript-eslint": "^8.51.0",
-    "vitest": "^4.0.16"
-  },
-  "publishConfig": {
-    "access": "public",
-    "provenance": true
+    "turbo": "^2.4.0",
+    "typescript-eslint": "^8.51.0"
   },
   "release": {
-    "preset": "conventionalcommits"
+    "preset": "conventionalcommits",
+    "pkgRoot": "packages/vite-plugin-serve-static"
   }
 }

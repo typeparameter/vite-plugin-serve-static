@@ -1,0 +1,8 @@
+{
+  "version": "1.3.2",
+  "environment": "local",
+  "build": {
+    "commit": "4f9d7c1b2a6e4f0a9f0e9b1e2c3d4a5b6c7d8e9f",
+    "timestamp": "2026-03-01T00:00:00Z"
+  }
+}

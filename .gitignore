@@ -14,4 +14,7 @@ node_modules
 .eslintcache
 
 # Build output
-/dist
+dist
+
+# Turbo
+.turbo
