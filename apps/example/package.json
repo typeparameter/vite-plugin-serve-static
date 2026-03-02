@@ -1,0 +1,21 @@
+{
+  "name": "vite-plugin-serve-static-example-app",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "clean": "rimraf dist",
+    "dev": "vite",
+    "lint": "tsc && eslint --cache --max-warnings=0 .",
+    "lint:fix": "tsc && eslint --fix --cache --max-warnings=0 .",
+    "preview": "vite preview",
+    "test": "vitest --run"
+  },
+  "devDependencies": {
+    "vite-plugin-serve-static": "workspace:*",
+    "rimraf": "^6.0.1",
+    "typescript": "~5.7.2",
+    "vite": "^7.3.0",
+    "vitest": "^4.0.16"
+  }
+}

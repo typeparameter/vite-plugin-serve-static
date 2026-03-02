@@ -1,0 +1,50 @@
+{
+  "name": "vite-plugin-serve-static",
+  "version": "0.0.0",
+  "description": "A Vite plugin for serving static files during local development",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/typeparameter/vite-plugin-serve-static.git"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/typeparameter/vite-plugin-serve-static",
+  "keywords": [
+    "vite-plugin"
+  ],
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "files": [
+    "dist"
+  ],
+  "main": "dist/index.mjs",
+  "types": "dist/index.d.mts",
+  "scripts": {
+    "build": "tsdown",
+    "clean": "rimraf dist",
+    "lint": "tsc && eslint --cache --max-warnings=0 .",
+    "lint:fix": "tsc && eslint --fix --cache --max-warnings=0 .",
+    "prepack": "pnpm build",
+    "test": "vitest --run"
+  },
+  "peerDependencies": {
+    "vite": ">=5.0.0 <8.0.0"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "mime-types": "^2.1.35"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/mime-types": "^2.1.4",
+    "rimraf": "^6.0.1",
+    "tsdown": "^0.18.4",
+    "typescript": "~5.7.2",
+    "vitest": "^4.0.16"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  }
+}
