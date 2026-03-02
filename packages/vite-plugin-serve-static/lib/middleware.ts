@@ -5,21 +5,22 @@ import corsMiddleware from "cors";
 import * as mime from "mime-types";
 import { Connect, Logger, PreviewServer, ViteDevServer } from "vite";
 
-import { Config as PluginConfig } from "./config.ts";
+import { normalizeConfig, Config as PluginConfig } from "./config.ts";
 import { isDevServer, setupLogger } from "./utils.ts";
 
 export function createMiddleware(
-  config: PluginConfig,
+  pluginConfig: PluginConfig,
   rawLogger: Logger,
 ): Connect.NextHandleFunction {
   const log = setupLogger(rawLogger);
+  const config = normalizeConfig(pluginConfig);
 
   return function serveStaticMiddleware(req, res, next) {
     if (!req.url) {
       return next();
     }
 
-    for (const { pattern, resolve } of config) {
+    for (const { pattern, resolve, headers } of config.rules) {
       const match = pattern.exec(req.url);
 
       if (match) {
@@ -33,10 +34,16 @@ export function createMiddleware(
           return;
         }
 
-        const type = mime.contentType(path.basename(filePath));
+        const contentType =
+          headers["content-type"] ||
+          config.contentType ||
+          mime.contentType(path.basename(filePath)) ||
+          "application/octet-stream";
+
         res.writeHead(200, {
-          "Content-Length": stats.size,
-          "Content-Type": type || "application/octet-stream",
+          "content-length": stats.size,
+          "content-type": contentType,
+          ...headers,
         });
 
         const stream = fs.createReadStream(filePath);

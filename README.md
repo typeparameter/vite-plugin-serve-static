@@ -35,9 +35,28 @@ export default defineConfig({
 
 ## Config
 
-The configuration is defined as an array of objects defining which patterns to intercept and how to resolve them.
+The configuration can be provided as one of the following formats.
 
-Each `pattern` is defined as a [regular expression]. The `resolve` property can either be a string containing the path to a single file or a function that returns a string given the result of executing the `pattern` against the request path.
+- An array of rules (legacy mode)
+- An object with `rules`, plus an optional global `contentType`
+
+Each rule defines which patterns to intercept and how to resolve them. Each `pattern` is defined as a [regular expression]. The `resolve` property can either be a string containing the path to a single file or a function that returns a string given the result of executing the `pattern` against the request path. Rules can also specify `headers` to apply per match.
+
+```typescript
+const serveStaticPlugin = serveStatic({
+  contentType: "text/plain",
+  rules: [
+    {
+      pattern: /^\/metadata\.json/,
+      resolve: path.join(".", "metadata.json"),
+      headers: {
+        "Cache-Control": "no-store",
+        "X-Static-File": "true",
+      },
+    },
+  ],
+});
+```
 
 ## License
 

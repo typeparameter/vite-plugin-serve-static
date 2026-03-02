@@ -58,7 +58,7 @@ describe("middleware", () => {
     // then
     expect(res.writeHead).toHaveBeenCalledWith(
       200,
-      expect.objectContaining({ "Content-Length": 50, "Content-Type": "application/octet-stream" }),
+      expect.objectContaining({ "content-length": 50, "content-type": "application/octet-stream" }),
     );
     expect(mockCreateReadStream).toHaveBeenCalledWith(path.join(".", "hello"));
     expect(mockPipe).toHaveBeenCalled();
@@ -106,12 +106,122 @@ describe("middleware", () => {
       // then
       expect(res.writeHead).toHaveBeenCalledWith(
         200,
-        expect.objectContaining({ "Content-Length": test.size, "Content-Type": test.type }),
+        expect.objectContaining({ "content-length": test.size, "content-type": test.type }),
       );
       expect(mockCreateReadStream).toHaveBeenCalledWith(test.file);
       expect(mockPipe).toHaveBeenCalled();
       expect(mockNext).not.toHaveBeenCalled();
     }
+  });
+
+  it("applies per-rule headers", () => {
+    // given
+    const config: Config = [
+      {
+        pattern: /^\/hello/,
+        resolve: path.join(".", "hello"),
+        headers: {
+          "Cache-Control": "no-store",
+          "X-Static-File": "true",
+        },
+      },
+    ];
+    const middleware = createMiddleware(config, mockLogger);
+    const req = createMockReq({ url: "/hello" });
+    const res = createMockRes();
+
+    // when
+    middleware(req, res, mockNext);
+
+    // then
+    expect(res.writeHead).toHaveBeenCalledWith(
+      200,
+      expect.objectContaining({
+        "content-length": 1,
+        "content-type": "application/octet-stream",
+        "cache-control": "no-store",
+        "x-static-file": "true",
+      }),
+    );
+    expect(mockNext).not.toHaveBeenCalled();
+  });
+
+  it("uses the content type from headers when provided", () => {
+    // given
+    const config: Config = {
+      contentType: "text/plain",
+      rules: [
+        {
+          pattern: /^\/profile/,
+          resolve: path.join("..", "profile.json"),
+          headers: { "Content-Type": "text/plain" },
+        },
+      ],
+    };
+    const middleware = createMiddleware(config, mockLogger);
+    const req = createMockReq({ url: "/profile" });
+    const res = createMockRes();
+
+    // when
+    middleware(req, res, mockNext);
+
+    // then
+    expect(res.writeHead).toHaveBeenCalledWith(
+      200,
+      expect.objectContaining({
+        "content-type": "text/plain",
+      }),
+    );
+    expect(mockNext).not.toHaveBeenCalled();
+  });
+
+  it("uses global content type when no header override is provided", () => {
+    // given
+    const config: Config = {
+      contentType: "text/plain",
+      rules: [
+        {
+          pattern: /^\/profile/,
+          resolve: path.join("..", "profile.json"),
+        },
+      ],
+    };
+    const middleware = createMiddleware(config, mockLogger);
+    const req = createMockReq({ url: "/profile" });
+    const res = createMockRes();
+
+    // when
+    middleware(req, res, mockNext);
+
+    // then
+    expect(res.writeHead).toHaveBeenCalledWith(
+      200,
+      expect.objectContaining({ "content-length": 1, "content-type": "text/plain" }),
+    );
+    expect(mockNext).not.toHaveBeenCalled();
+  });
+
+  it("uses octet-stream as the content type fallback when there is no MIME type match", () => {
+    // given
+    const config: Config = [
+      {
+        pattern: /^\/binary/,
+        resolve: path.join("..", "file.unknown"),
+      },
+    ];
+    const middleware = createMiddleware(config, mockLogger);
+    const req = createMockReq({ url: "/binary" });
+    const res = createMockRes();
+
+    // when
+    middleware(req, res, mockNext);
+
+    // then
+    expect(res.writeHead).toHaveBeenCalledWith(
+      200,
+      expect.objectContaining({ "content-type": "application/octet-stream" }),
+    );
+    expect(mockNext).not.toHaveBeenCalled();
   });
 
   it("returns a 404 if the resolved path cannot be opened", () => {
