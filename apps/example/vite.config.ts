@@ -9,19 +9,21 @@ const staticDir = path.join(__dirname, "static");
 
 export default defineConfig({
   plugins: [
-    serveStatic([
-      {
-        pattern: /^\/metadata\.json$/,
-        resolve: path.join(staticDir, "metadata.json"),
-      },
-      {
-        pattern: /^\/data\/(.*)$/,
-        resolve: (match: RegExpExecArray) => path.join(staticDir, "data", `${match[1]!}.csv`),
-      },
-      {
-        pattern: /^\/pages\/(.*)$/,
-        resolve: (match: RegExpExecArray) => path.join(staticDir, "pages", `${match[1]!}.html`),
-      },
-    ]),
+    serveStatic({
+      rules: [
+        {
+          pattern: /^\/metadata\.json$/,
+          resolve: path.join(staticDir, "metadata.json"),
+        },
+        {
+          pattern: /^\/data\/(.*)$/,
+          resolve: (match: RegExpExecArray) => path.join(staticDir, "data", `${match[1]!}.csv`),
+        },
+        {
+          pattern: /^\/pages\/(.*)$/,
+          resolve: (match: RegExpExecArray) => path.join(staticDir, "pages", `${match[1]!}.html`),
+        },
+      ],
+    }),
   ],
 });
