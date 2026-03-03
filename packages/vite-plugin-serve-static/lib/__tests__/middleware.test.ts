@@ -14,12 +14,14 @@ const mockCreateReadStream = vi.mocked(fs.createReadStream);
 const mockStatSync = vi.mocked(fs.statSync);
 const mockPipe = vi.fn();
 
-const testConfig: Config = [
-  {
-    pattern: /\/test-data\/(.*)/,
-    resolve: (groups) => path.join("..", "test-data", groups[1] ?? ""),
-  },
-];
+const testConfig: Config = {
+  rules: [
+    {
+      pattern: /\/test-data\/(.*)/,
+      resolve: (groups) => path.join("..", "test-data", groups[1] ?? ""),
+    },
+  ],
+};
 
 function expectYield(res: ServerResponse<Connect.IncomingMessage>) {
   expect(mockNext).toHaveBeenCalledOnce();
@@ -42,12 +44,14 @@ describe("middleware", () => {
   it("works with string resolvers", () => {
     // given
     mockStatSync.mockReturnValue({ size: 50, isFile: () => true } as Stats);
-    const config = [
-      {
-        pattern: /^\/hello/,
-        resolve: path.join(".", "hello"),
-      },
-    ];
+    const config: Config = {
+      rules: [
+        {
+          pattern: /^\/hello/,
+          resolve: path.join(".", "hello"),
+        },
+      ],
+    };
     const middleware = createMiddleware(config, mockLogger);
     const req = createMockReq({ url: "/hello" });
     const res = createMockRes();
@@ -66,16 +70,18 @@ describe("middleware", () => {
   });
 
   it("works with function resolvers", () => {
-    const config: Config = [
-      {
-        pattern: /^\/profile/,
-        resolve: () => path.join("..", "profile.json"),
-      },
-      {
-        pattern: /^\/images\/.*/,
-        resolve: ([match]) => path.join("..", match),
-      },
-    ];
+    const config: Config = {
+      rules: [
+        {
+          pattern: /^\/profile/,
+          resolve: () => path.join("..", "profile.json"),
+        },
+        {
+          pattern: /^\/images\/.*/,
+          resolve: ([match]) => path.join("..", match),
+        },
+      ],
+    };
 
     const tests = [
       {
@@ -116,16 +122,18 @@ describe("middleware", () => {
 
   it("applies per-rule headers", () => {
     // given
-    const config: Config = [
-      {
-        pattern: /^\/hello/,
-        resolve: path.join(".", "hello"),
-        headers: {
-          "Cache-Control": "no-store",
-          "X-Static-File": "true",
+    const config: Config = {
+      rules: [
+        {
+          pattern: /^\/hello/,
+          resolve: path.join(".", "hello"),
+          headers: {
+            "Cache-Control": "no-store",
+            "X-Static-File": "true",
+          },
         },
-      },
-    ];
+      ],
+    };
     const middleware = createMiddleware(config, mockLogger);
     const req = createMockReq({ url: "/hello" });
     const res = createMockRes();
@@ -148,16 +156,18 @@ describe("middleware", () => {
 
   it("drops undefined header values", () => {
     // given
-    const config: Config = [
-      {
-        pattern: /^\/hello/,
-        resolve: path.join(".", "hello"),
-        headers: {
-          "Cache-Control": undefined,
-          "X-Static-File": "true",
+    const config: Config = {
+      rules: [
+        {
+          pattern: /^\/hello/,
+          resolve: path.join(".", "hello"),
+          headers: {
+            "Cache-Control": undefined,
+            "X-Static-File": "true",
+          },
         },
-      },
-    ];
+      ],
+    };
     const middleware = createMiddleware(config, mockLogger);
     const req = createMockReq({ url: "/hello" });
     const res = createMockRes();
@@ -230,12 +240,14 @@ describe("middleware", () => {
 
   it("uses octet-stream as the content type fallback when there is no MIME type match", () => {
     // given
-    const config: Config = [
-      {
-        pattern: /^\/binary/,
-        resolve: path.join("..", "file.unknown"),
-      },
-    ];
+    const config: Config = {
+      rules: [
+        {
+          pattern: /^\/binary/,
+          resolve: path.join("..", "file.unknown"),
+        },
+      ],
+    };
     const middleware = createMiddleware(config, mockLogger);
     const req = createMockReq({ url: "/binary" });
     const res = createMockRes();
@@ -294,7 +306,7 @@ describe("middleware", () => {
 
   it("yields if the config is empty", () => {
     // given
-    const middleware = createMiddleware([], mockLogger);
+    const middleware = createMiddleware({ rules: [] }, mockLogger);
     const req = createMockReq();
     const res = createMockRes();
 
@@ -316,5 +328,30 @@ describe("middleware", () => {
 
     // then
     expectYield(res);
+  });
+
+  it("supports the legacy array config format", () => {
+    // given
+    const config: Config = [
+      {
+        pattern: /^\/hello/,
+        resolve: path.join(".", "hello"),
+      },
+    ];
+    const middleware = createMiddleware(config, mockLogger);
+    const req = createMockReq({ url: "/hello" });
+    const res = createMockRes();
+
+    // when
+    middleware(req, res, mockNext);
+
+    // then
+    expect(res.writeHead).toHaveBeenCalledWith(
+      200,
+      expect.objectContaining({ "content-length": 1, "content-type": "application/octet-stream" }),
+    );
+    expect(mockCreateReadStream).toHaveBeenCalledWith(path.join(".", "hello"));
+    expect(mockPipe).toHaveBeenCalled();
+    expect(mockNext).not.toHaveBeenCalled();
   });
 });
