@@ -29,7 +29,7 @@
     "test": "vitest --run"
   },
   "peerDependencies": {
-    "vite": ">=5.0.0 <8.0.0"
+    "vite": ">=5.0.0 <9.0.0"
   },
   "dependencies": {
     "cors": "^2.8.5",
@@ -46,5 +46,16 @@
   "publishConfig": {
     "access": "public",
     "provenance": true
+  },
+  "compatiblePackages": {
+    "schemaVersion": 1,
+    "rolldown": {
+      "type": "incompatible",
+      "reason": "Uses Vite-specific APIs"
+    },
+    "rollup": {
+      "type": "incompatible",
+      "reason": "Uses Vite-specific APIs"
+    }
   }
 }
