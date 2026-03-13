@@ -15,7 +15,7 @@
     "vite-plugin-serve-static": "workspace:*",
     "rimraf": "^6.0.1",
     "typescript": "~5.7.2",
-    "vite": "^7.3.0",
+    "vite": "^8.0.0",
     "vitest": "^4.0.16"
   }
 }
