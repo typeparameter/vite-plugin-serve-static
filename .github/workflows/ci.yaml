@@ -30,11 +30,18 @@ jobs:
       - run: pnpm format:check
 
   test:
-    name: Test
+    name: Test (vite ${{ matrix.vite-version }}, node ${{ matrix.node-version }}, ${{ matrix.os }})
     strategy:
       matrix:
-        node-version: [20, 22, 24, 26]
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        include:
+          - { vite-version: 5, node-version: 20, os: ubuntu-latest }
+          - { vite-version: 6, node-version: 22, os: ubuntu-latest }
+          - { vite-version: 7, node-version: 24, os: ubuntu-latest }
+          - { vite-version: 8, node-version: 26, os: ubuntu-latest }
+          - { vite-version: 5, node-version: 26, os: windows-latest }
+          - { vite-version: 8, node-version: 26, os: windows-latest }
+          - { vite-version: 5, node-version: 26, os: macos-latest }
+          - { vite-version: 8, node-version: 26, os: macos-latest }
       fail-fast: false
     runs-on: ${{ matrix.os }}
     steps:
@@ -45,4 +52,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: pnpm
       - run: pnpm install
+      - run: pnpm -r add -D vite@^${{ matrix.vite-version }}
+      - if: matrix.vite-version == 5
+        run: pnpm -r add -D vitest@^2 # Use a compatible vitest version
       - run: pnpm test
