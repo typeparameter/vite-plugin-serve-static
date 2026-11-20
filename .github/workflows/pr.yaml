@@ -44,11 +44,14 @@ jobs:
 
       - name: Check release condition
         id: release-condition
+        env:
+          CHANGE_TYPE: ${{ steps.lint.outputs.type }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
         run: |
           release_change_regex='(feat)|(fix)'
           breaking_change_regex='.+!:'
-          change_type='${{steps.lint.outputs.type}}'
-          pr_title='${{github.event.pull_request.title}}'
+          change_type="${CHANGE_TYPE}"
+          pr_title="${PR_TITLE}"
           if [[ "$change_type" =~ $release_change_regex || "$pr_title" =~ $breaking_change_regex ]]; then
             echo 'release-specifier=will create a release' >> "$GITHUB_OUTPUT"
           else
