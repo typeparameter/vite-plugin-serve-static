@@ -44,12 +44,10 @@ jobs:
 
       - name: Check release condition
         id: release-condition
+        env:
+          WILL_RELEASE: ${{ contains(fromJSON('["feat","fix"]'), steps.lint.outputs.type) || contains(github.event.pull_request.title, '!:') }}
         run: |
-          release_change_regex='(feat)|(fix)'
-          breaking_change_regex='.+!:'
-          change_type='${{steps.lint.outputs.type}}'
-          pr_title='${{github.event.pull_request.title}}'
-          if [[ "$change_type" =~ $release_change_regex || "$pr_title" =~ $breaking_change_regex ]]; then
+          if [[ "$WILL_RELEASE" == "true" ]]; then
             echo 'release-specifier=will create a release' >> "$GITHUB_OUTPUT"
           else
             echo 'release-specifier=will not create a release' >> "$GITHUB_OUTPUT"

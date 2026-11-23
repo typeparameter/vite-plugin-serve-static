@@ -20,7 +20,6 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: 26
-          cache: pnpm
       - run: pnpm install
       - run: npm audit signatures
       - run: pnpx semantic-release@25
